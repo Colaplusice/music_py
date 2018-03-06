@@ -1,0 +1,95 @@
+{% extends 'music/base.html' %}
+{% block body %}
+    {% if album %}
+    <div class="container-fluid song-container">
+        <div class="row">
+            {#left album info#}
+            <div class="col-sm-4 col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel panel-body">
+                        <a href="{% url 'music:index' %}"></a>
+                        <img src=" {{ album.album_logo.url }}" class="img-responsive">
+                        <h1>{{ album.album_title }}</h1>
+                        <h3><small>{{ album.genre }}</small></h3>
+                        <h2>{{ album.artist }}</h2>
+                    </div>
+
+                </div>
+            </div>
+
+            {#         right information    一行一行的显示#}
+            <div class="col-sm-8 col-md-9">
+                <ul class="nav nav-pills" style="margin-bottom: 10px">
+                    <li role="presentation" class="active"><a href="{% url 'music:detail' album.id %}">view All </a>
+                    </li>
+                    <li role="presentation" class="active"><a href="{% url 'music:add_song' album.id %}">add Song </a>
+                    </li>
+                </ul>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h3>All songs</h3>
+                        {% if error_message %}
+                            <p><strong>  {{ error_message }}  </strong></p>
+                        {% endif %}
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>title</th>
+                                <th>audio_file</th>
+                                <th>favorite</th>
+                                <th>actions</th>
+                            </tr>
+
+                            </thead>
+                            <tbody>
+
+                            {% for song in album.song_set.all %}
+                                <tr>
+                                    <td>{{ song.song_title }}</td>
+
+                                    <td>
+                                    <a target="_blank" href=" {{ song.audio_file.url }}">
+                                         <button type="button" class="btn btn-success btn-xs">
+                                            <span class="glyphicon glyphicon-play"></span>
+                                         &nbsp; play</button>
+                                    </a>
+                                    </td>
+
+
+{#                                favorite#}
+                                    <td>
+                                        <a href=" {% url 'music:favorite_song' song.id %}" class="btn-favorite">
+                                               <span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span>
+                                        </a>
+
+                                    </td>
+
+{#                                delete#}
+                                    <td>
+                                        <form action="{% url 'music:song-delete' song.id%}" method="post" style="display: inline">
+                                            {% csrf_token %}
+                                            {#         将pid 通过name 传递过去#}
+                                        <input type="hidden" name="song_id" value="{{ song.id }}">
+                                        <button type="submit" class="btn btn-danger btn-xs ">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                        &nbsp; delete
+                                        </button>
+
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <h2 align="center"> album does not exist!</h2>
+        <h4 align="center"><a href="{% url 'music:index' %}">back to index view</a> </h4>
+
+    {% endif %}
+{% endblock %}
