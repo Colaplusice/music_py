@@ -23,3 +23,7 @@ class Song(models.Model):
 
     def __str__(self):
         return self.song_title
+    def delete(self, using=None, keep_parents=False):
+        file=Song.objects.filter(audio_file=self.audio_file)
+        file.delete()
+        super(Song,self).delete()

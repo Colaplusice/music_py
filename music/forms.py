@@ -13,7 +13,7 @@ class SongForm(forms.ModelForm):
 
     class Meta():
         model=Song
-        fields=['song_title','audio_file']
+        fields=['audio_file']
 
 
 class UserForm(forms.ModelForm):

@@ -12,29 +12,28 @@ from django.db.models import Q
 
 AUDIO_FILE_TYPES=['wav','mp3','ogg']
 IMAGE_FILE_TYPES=['png','jpg','jpeg']
-
 app_name='music'
 
-
 def Index(request):
-    if not request.user.is_authenticated():
-        return render(request,'music/login.html')
-    else:
+    try:
+        if not request.user.is_authenticated():
+            return render(request,'music/login.html')
+        else:
+            albums=Album.objects.filter(user=request.user)
+            song_results=Song.objects.all()
+            query=request.GET.get("q")
+            if query:
+                albums=albums.filter(Q(album_title__icontains=query)|
+                                     Q(artist__icontains=query)
+                                     ).distinct()
 
-        albums=Album.objects.filter(user=request.user)
-        song_results=Song.objects.all()
-        query=request.GET.get("q")
-        if query:
-            albums=albums.filter(Q(album_title__icontains=query)|
-                                 Q(artist__icontains=query)
-                                 ).distinct()
+                song_results=song_results.filter(Q(song_title__contains=query)
+                                                 ).distinct()
+                return render(request,'music/index.html',{'all_albums':albums,'songs':song_results})
 
-            song_results=song_results.filter(Q(song_title__contains=query)
-                                             ).distinct()
-            return render(request,'music/index.html',{'all_albums':albums,'songs':song_results})
-
-    return render(request,'music/index.html',{'all_albums':albums})
-
+        return render(request,'music/index.html',{'all_albums':albums})
+    except:
+        return render(request,'music/httperror.html')
 
 class Detailview(generic.DetailView):
     model = Album
@@ -62,16 +61,17 @@ def Add_Song(request,album_id):
                         'form':song_form,
                         'error':'you have already have this song'
                     }
-
                     return  render(request,'music/add_song.html',context)
 
             song=song_form.save(commit=False)
+            song.audio_file = request.FILES['audio_file']
+            a=request.FILES['audio_file']
+            a=str(a)
             song.album=album
-            song.audio_file=request.FILES['audio_file']
-            file_type=song.audio_file.url.split('.')[-1]
-
+            file_type=a.split('.')[-1]
+            file_name=a.split('.')[0]
+            song.song_title=file_name
             file_type=file_type.lower()
-
             #格式不支持
             if file_type not in AUDIO_FILE_TYPES:
                 context={
@@ -111,6 +111,7 @@ def Creatalbum(request):
                     'error':'file type is not supported'
                 }
                 return render(request,'music/album_form.html',context)
+            print('here is right')
             album.save()
             all_albums=Album.objects.filter(user=request.user)
             return render(request,'music/index.html',{'all_albums':all_albums})
@@ -186,10 +187,15 @@ def Login_user(request):
             else:
                 return render(request,'music/index.html',{'error':'you account is not active'})
         else:
-            return render(request,'music/index.html',{'error':'invaild account'})
+            return render(request,'music/login.html',{'error':'invaild account'})
 
     else:
         return render(request,'music/login.html')
+
+
+
+
+
 
 #logout
 def Logout_user(request):
@@ -215,7 +221,8 @@ def favorite_album(request,album_id):
         album.save()
     except(KeyError,Album.DoesNotExist):
         return JsonResponse({'success': False})
-    return render(request, 'music/index.html')
+    all_album=Album.objects.filter(user=request.user)
+    return render(request, 'music/index.html',{'all_albums':all_album})
 
 #favorite song
 def favorite_song(request,song_id):
@@ -226,6 +233,8 @@ def favorite_song(request,song_id):
             song.is_favorite=False
         else:
             song.is_favorite=True
+
+
 
         song.save()
     except(KeyError,Song.DoesNotExist):
