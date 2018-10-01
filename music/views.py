@@ -1,12 +1,11 @@
 # encoding=utf-8
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, View
+from django.views.generic.edit import View
 from .models import Album, Song
 from .forms import UserForm, AlbumForm, SongForm
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-import traceback
 from django.db.models import Q
 
 AUDIO_FILE_TYPES = ['wav', 'mp3', 'ogg']
@@ -16,24 +15,26 @@ app_name = 'music'
 
 def Index(request):
     # try:
-        if not request.user.is_authenticated:
-            return render(request, 'music/login.html')
-        else:
-            albums = Album.objects.filter(user=request.user)
-            song_results = Song.objects.all()
-            query = request.GET.get("q")
-            if query:
-                albums = albums.filter(Q(album_title__icontains=query) |
-                                       Q(artist__icontains=query)
-                                       ).distinct()
+    if not request.user.is_authenticated:
+        return render(request, 'music/login.html')
+    else:
+        albums = Album.objects.filter(user=request.user)
+        song_results = Song.objects.all()
+        query = request.GET.get("q")
+        if query:
+            albums = albums.filter(Q(album_title__icontains=query) |
+                                   Q(artist__icontains=query)
+                                   ).distinct()
 
-                song_results = song_results.filter(Q(song_title__contains=query)
-                                                   ).distinct()
-                return render(request, 'music/index.html', {'all_albums': albums, 'songs': song_results})
+            song_results = song_results.filter(Q(song_title__contains=query)
+                                               ).distinct()
+            return render(request, 'music/index.html', {'all_albums': albums, 'songs': song_results})
 
-        return render(request, 'music/index.html', {'all_albums': albums})
-    # except Exception as e:
-    #     return render(request, 'music/httperror.html')
+    return render(request, 'music/index.html', {'all_albums': albums})
+
+
+# except Exception as e:
+#     return render(request, 'music/httperror.html')
 
 
 class Detailview(generic.DetailView):

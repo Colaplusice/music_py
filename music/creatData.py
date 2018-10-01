@@ -1,10 +1,10 @@
 import os
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 import django
+from music.models import Album, Song
 
 django.setup()
-from music.models import Album, Song
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
 
 def CreateAlbum():
