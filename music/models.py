@@ -1,29 +1,32 @@
 from django.db import models
-from django.contrib.auth.models import Permission,User
+from django.contrib.auth.models import Permission, User
+
+
 # Create your models here.
 
 class Album(models.Model):
-    user=models.ForeignKey(User,default=1)
-    is_favorite=models.BooleanField(default=False)
-    artist=models.CharField(max_length=250)
-    album_title=models.CharField(max_length=500)
-    genre=models.CharField(max_length=100)
-    album_logo=models.FileField()
+    user = models.ForeignKey(User, default=1,on_delete=True)
+    is_favorite = models.BooleanField(default=False)
+    artist = models.CharField(max_length=250)
+    album_title = models.CharField(max_length=500)
+    genre = models.CharField(max_length=100)
+    album_logo = models.FileField()
 
     def __str__(self):
-        return self.album_title+' - '+self.artist
+        return self.album_title + ' - ' + self.artist
 
 
 class Song(models.Model):
-    album=models.ForeignKey(Album,on_delete=models.CASCADE)
-    file_type=models.CharField(max_length=10)
-    song_title=models.CharField(max_length=250)
-    is_favorite=models.BooleanField(default=False)
-    audio_file=models.FileField(default='')
+    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+    file_type = models.CharField(max_length=10)
+    song_title = models.CharField(max_length=250)
+    is_favorite = models.BooleanField(default=False)
+    audio_file = models.FileField(default='')
 
     def __str__(self):
         return self.song_title
+
     def delete(self, using=None, keep_parents=False):
-        file=Song.objects.filter(audio_file=self.audio_file)
+        file = Song.objects.filter(audio_file=self.audio_file)
         file.delete()
-        super(Song,self).delete()
+        super(Song, self).delete()
