@@ -6,14 +6,12 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('music', '0001_initial'),
-    ]
+    dependencies = [("music", "0001_initial")]
 
     operations = [
         migrations.AddField(
-            model_name='song',
-            name='is_favorite',
+            model_name="song",
+            name="is_favorite",
             field=models.BooleanField(default=False),
-        ),
+        )
     ]

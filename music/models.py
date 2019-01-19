@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
 class Album(models.Model):
     user = models.ForeignKey(User, default=1, on_delete=True)
     is_favorite = models.BooleanField(default=False)
@@ -13,7 +14,7 @@ class Album(models.Model):
     album_logo = models.FileField()
 
     def __str__(self):
-        return self.album_title + ' - ' + self.artist
+        return self.album_title + " - " + self.artist
 
 
 class Song(models.Model):
@@ -21,7 +22,7 @@ class Song(models.Model):
     file_type = models.CharField(max_length=10)
     song_title = models.CharField(max_length=250)
     is_favorite = models.BooleanField(default=False)
-    audio_file = models.FileField(default='')
+    audio_file = models.FileField(default="")
 
     def __str__(self):
         return self.song_title

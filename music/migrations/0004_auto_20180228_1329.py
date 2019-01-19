@@ -9,18 +9,20 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('music', '0003_auto_20180228_0242'),
+        ("music", "0003_auto_20180228_0242"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='album',
-            name='user',
-            field=models.ForeignKey(default=1, to=settings.AUTH_USER_MODEL,on_delete=True),
+            model_name="album",
+            name="user",
+            field=models.ForeignKey(
+                default=1, to=settings.AUTH_USER_MODEL, on_delete=True
+            ),
         ),
         migrations.AddField(
-            model_name='song',
-            name='audio_file',
-            field=models.FileField(default=b'', upload_to=b''),
+            model_name="song",
+            name="audio_file",
+            field=models.FileField(default=b"", upload_to=b""),
         ),
     ]

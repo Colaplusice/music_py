@@ -6,18 +6,18 @@ from django import forms
 class AlbumForm(forms.ModelForm):
     class Meta:
         model = Album
-        fields = ['artist', 'album_title', 'genre', 'album_logo']
+        fields = ["artist", "album_title", "genre", "album_logo"]
 
 
 class SongForm(forms.ModelForm):
-    class Meta():
+    class Meta:
         model = Song
-        fields = ['audio_file']
+        fields = ["audio_file"]
 
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
 
-    class Meta():
+    class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ["username", "email", "password"]

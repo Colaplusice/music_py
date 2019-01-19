@@ -5,11 +5,11 @@ from django.conf import settings
 
 urlpatterns = [
     # Examples:
-    # url(r'^$', 'website.views.home', name='home'),
+    # url(r'^$', 'music_py.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     # url(r'^music/', include('music.urls')),
-    url(r'^', include('music.urls')),
-    url(r'^admin/', admin.site.urls),
+    url(r"^", include("music.urls")),
+    url(r"^admin/", admin.site.urls),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
