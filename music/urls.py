@@ -14,8 +14,8 @@ urlpatterns = [
     url(r"delete_song/(?P<song_id>[0-9]+)$", views.Delete_song, name="song-delete"),
     # /music/2/delete
     url(r"^(?P<album_id>[0-9]+)/delete_album/$", views.Delete, name="album-delete"),
-    # /music/logout
-    url(r"^logout/$", views.Logout_user, name="logout"),
+    # /music/log_out
+    url(r"^log_out/$", views.Logout_user, name="log_out"),
     # /music/login
     url(r"^login/$", views.Login_user, name="login"),
     # /music/register

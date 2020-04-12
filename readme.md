@@ -1,6 +1,7 @@
-## music-- 第三个django project
+# django music
 
 ### 功能
+
 1. 用户注册，用户登录
 2. 上传音乐，专辑图片
 3. 播放音乐

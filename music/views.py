@@ -198,7 +198,7 @@ def Login_user(request):
         return render(request, "music/login.html")
 
 
-# logout
+# log_out
 def Logout_user(request):
     logout(request)
     form = UserForm(request.POST or None)

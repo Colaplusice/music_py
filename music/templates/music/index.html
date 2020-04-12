@@ -103,10 +103,9 @@
             {% else %}
                 <div class="col-sm-12">
                     <br>
-                    <a href="{% url 'music:album-add' %}"></a>
                     <button type="button" class="btn btn-success">
                         <span class="glyphicon glyphicon-plus"></span>
-                        &nbsp; add a album
+                        <a href="{% url 'music:album-add' %}" class="btn-success"> add a album</a>
                     </button>
                 </div>
                 <br>
