@@ -3,14 +3,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="{% static 'music/css/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'music/css/bootstrap.min.css' %}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="{% static 'music/js/bootstrap.min.js' %}"></script>
-</head>
+    {#    <link rel="stylesheet" type="text/css" href="{% static 'music/css/bootstrap.min.css' %}">#}
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
 
+    <!-- Latest compiled and minified JavaScript -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+          crossorigin="anonymous">
+    {% block css %}
+    {% endblock %}
+</head>
 <body background="{% static 'music/images/background.png' %}">
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
@@ -21,7 +29,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'music:index' %}">sad</a>
+            <a class="navbar-brand" href="{% url 'music:index' %}">English learning</a>
         </div>
         {#            items#}
         <div class="collapse navbar-collapse" id="topNavBar">
@@ -45,45 +53,40 @@
                     <input type="text" class="form-control" name="q" value="{{ request.GET.q }}">
                 </div>
 
-                <button type="submit" class="btn btn-default">Serach</button>
+                <button type="submit" class="btn btn-default">搜索</button>
             </form>
-
             <ul class="nav navbar-nav navbar-right">
-                {% if user.is_authenticated %}
-
-                    <li class="active">
-                        <a href="{% url 'music:album-add' %}">
-                            <span class="glyphicon glyphicon-plus"></span> &nbsp;add albums
-                        </a>
-                    </li>
-
+                {% if request.session.login_in == True %}
+                    <li><a href="#">{{ request.session.name }}</a></li>
                     <li class="nav navbar-nav navbar-right">
-                        <a href="{% url 'music:log_out' %}">
-                            <span class="glyphicon glyphicon-off"></span>&nbsp; logout
+                        <a href="{% url 'music:logout' %}">
+                            <span class="glyphicon glyphicon-off"></span>&nbsp; 登出
                         </a>
                     </li>
-
+                    {#                    <li><a href="{% url 'clear_cache' %}">清除缓存</a></li>#}
                 {% else %}
                     <li class="active">
                         <a href="{% url 'music:login' %}">
-                            <span class="glyphicon glyphicon-plus"></span> login
+                            <span class="glyphicon glyphicon-plus"></span> 登录
                         </a>
                     </li>
-
                     <li class="nav navbar-nav navbar-right">
                         <a href="{% url 'music:register' %}">
-                            <span class="glyphicon glyphicon-off"></span>&nbsp; register
+                            <span class="glyphicon glyphicon-off"></span>&nbsp; 注册
                         </a>
                     </li>
                 {% endif %}
-
             </ul>
         </div>
     </div>
 </nav>
 {% block  body %}
-
 {% endblock %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
+{#<script src="{% static 'music/js/bootstrap.min.js' %}"></script>#}
+{% block script %}
+{% endblock %}
 </body>
 </html>

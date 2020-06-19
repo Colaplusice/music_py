@@ -8,7 +8,7 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
 
-                        <form class="form-horizontal" action="{% url 'music:album-add' %}" method="post"
+                        <form class="form-horizontal" action="{% url 'music:index' %}" method="post"
                               enctype="multipart/form-data">
                             {% csrf_token %}
                             {% include 'music/form_template.html' %}

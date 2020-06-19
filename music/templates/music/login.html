@@ -1,49 +1,35 @@
 {% extends 'music/base.html' %}
-{% block title %}add a new Album{% endblock %}
+{#{% block title %}添加新的专辑{% endblock %}#}
 {% block body %}
-
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12 col-md-7">
+            <div class="col-sm-12 col-md-6 col-md-offset-3">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <h3>login</h3>
+                        <h3>登录</h3>
                         {% if error %}
                             <p><strong> {{ error }}</strong></p>
                         {% endif %}
-
-                        <form class="form-horizontal" action="{% url 'music:login' %}" method="post"
-                              enctype="multipart/form-data">
+                        <form class="" action="{% url 'music:login' %}" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
+                        {% include 'music/form_template.html' %}
+                                    <div class="row">
+                <div class="col-md-5 ">
+                                <button type="reset" class="btn btn-block btn-danger">清除</button>
 
-                            <div class="form-group">
-                                <label class="control-label col-sm-2" for="id_username">Username:</label>
+                </div>
+                <div class="col-md-5 col-md-offset-2">
+                               <button type="submit" class="btn btn-block btn-success">登录</button>
 
-                                <div class="col-sm-10">
-                                    <input type="text" id="id_username" maxlength="30" name="username">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-sm-2" for="id_password">Password:</label>
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <input type="password" id="id_password" maxlength="30" name="password">
-                                </div>
-                            </div>
+                </div>
+            </div>
 
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="submit" class="btn btn-success">
-                                        submit
-                                    </button>
-                                </div>
-                            </div>
                         </form>
                     </div>
                     {% if error %}
                         <div class="panel-footer">
                             {{ error }}
                         </div>
-
                     {% endif %}
                     <div class="panel-footer">
                         Don't you have a account?

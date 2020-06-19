@@ -1,54 +1,130 @@
 # encoding=utf-8
-from django.views import generic
-from django.views.generic.edit import View
-from .models import Album, Song
-from .forms import UserForm, AlbumForm, SongForm
+from functools import wraps
+
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
+from music.models import *
+from .forms import RegisterForm, LoginForm, SongForm, AlbumForm
 
 AUDIO_FILE_TYPES = ["wav", "mp3", "ogg"]
 IMAGE_FILE_TYPES = ["png", "jpg", "jpeg"]
 app_name = "music"
 
 
-def Index(request):
-    # try:
-    if not request.user.is_authenticated:
-        return render(request, "music/login.html")
+def login_in(func):  # 验证用户是否登录
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        request = args[0]
+        is_login = request.session.get("login_in")
+        if is_login:
+            return func(*args, **kwargs)
+        else:
+            return redirect(reverse("login"))
+
+    return wrapper
+
+
+# 登录功能
+def login(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            # phone = form.cleaned_data["phone"]
+            user = User.objects.filter(username=username).first()
+            if user and user.password == password:
+                request.session["login_in"] = True
+                request.session["user_id"] = user.id
+                request.session["name"] = username
+                # 用户第一次注册，让他选标签
+                # new = request.session.get('new')
+                # if new:
+                #     tags = Tags.objects.all()
+                #     return render(request, 'music/choose_tag.html', {'tags': tags})
+                return redirect(reverse("music:index"))
+            else:
+                return render(
+                    request, "music/login.html", {"form": form, "message": "账户或密码错误"}
+                )
+        else:
+            print('form invalid')
     else:
-        albums = Album.objects.filter(user=request.user)
-        song_results = Song.objects.all()
-        query = request.GET.get("q")
-        if query:
-            albums = albums.filter(
-                Q(album_title__icontains=query) | Q(artist__icontains=query)
-            ).distinct()
+        form = LoginForm()
+        return render(request, "music/login.html", {"form": form})
 
-            song_results = song_results.filter(Q(song_title__contains=query)).distinct()
+
+# 注册功能
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        error = None
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password2"]
+            phone = form.cleaned_data['phone']
+            User.objects.create(username=username, password=password, phone=phone)
+            request.session['new'] = 'true'
+            # 根据表单数据创建一个新的用户
+            return redirect(reverse("music:login"))  # 跳转到登录界面
+        else:
             return render(
-                request,
-                "music/index.html",
-                {"all_albums": albums, "songs": song_results},
-            )
+                request, "music/register.html", {"form": form, "error": error}
+            )  # 表单验证失败返回一个空表单到注册页面
+    form = RegisterForm()
+    return render(request, "music/register.html", {"form": form})
 
-    return render(request, "music/index.html", {"all_albums": albums})
+
+def logout(request):
+    if not request.session.get("login_in", None):  # 不在登录状态跳转回首页
+        return redirect(reverse("index"))
+    request.session.flush()  # 清除session信息
+    return redirect(reverse("index"))
+
+
+def index(request):
+    # try:
+    # if not request.music.is_authenticated:
+    #     return render(request, "music/login.html")
+    # else:
+    albums = Album.objects.all()
+    songs = random_choice_songs()
+    # query = request.GET.get("q")
+
+    # if query:
+    #     albums = albums.filter(
+    #         Q(album_title__icontains=query) | Q(artist__icontains=query)
+    #     ).distinct()
+    #
+    #     song_results = song_results.filter(Q(song_title__contains=query)).distinct()
+    return render(
+        request,
+        "music/index.html",
+        {"all_albums": albums, 'songs': songs},
+    )
+    # return render(request, "music/index.html", {"all_albums": albums})
 
 
 # except Exception as e:
 #     return render(request, 'music/httperror.html')
 
 
-class Detailview(generic.DetailView):
-    model = Album
-    template_name = "music/detail.html"
+def detail(request, album_id):
+    album=Album.objects.get(id=album_id)
+    return render(request, 'music/detail.html',{'album':album})
+
+
+def random_choice_songs():
+    return Song.objects.order_by('?')[:5]
 
 
 # add_song
 def Add_Song(request, album_id):
     # 未登录
-    if not request.user.is_authenticated:
+    if not request.music.is_authenticated:
         return render(request, "music/login.html")
     else:
         # 是否提交表单
@@ -59,7 +135,7 @@ def Add_Song(request, album_id):
 
             # 判断歌曲是否存在
             for s in album_songs:
-                if s.song_title == song_form.cleaned_data.get("song_title"):
+                if s.song_title == song_form.cleaned_data.get("name"):
                     context = {
                         "album": album,
                         "form": song_form,
@@ -95,13 +171,13 @@ def Add_Song(request, album_id):
 # create album
 def Creatalbum(request):
     # 未登录
-    if not request.user.is_authenticated:
+    if not request.music.is_authenticated:
         return render(request, "music/login.html")
     else:
         album_form = AlbumForm(request.POST or None, request.FILES or None)
         if album_form.is_valid():
             album = album_form.save(commit=False)
-            album.user = request.user
+            album.music = request.music
             album.album_logo = request.FILES["album_logo"]
 
             file_type = album.album_logo.url.split(".")[-1]
@@ -117,7 +193,7 @@ def Creatalbum(request):
                 return render(request, "music/album_form.html", context)
             print("here is right")
             album.save()
-            all_albums = Album.objects.filter(user=request.user)
+            all_albums = Album.objects.filter(music=request.music)
             return render(request, "music/index.html", {"all_albums": all_albums})
         #
         else:
@@ -130,7 +206,7 @@ def Creatalbum(request):
 def Delete(request, album_id):
     album = get_object_or_404(Album, pk=album_id)
     album.delete()
-    all_albums = Album.objects.filter(user=request.user)
+    all_albums = Album.objects.filter(music=request.music)
     return render(request, "music/index.html", {"all_albums": all_albums})
 
 
@@ -144,70 +220,6 @@ def Delete_song(request, song_id):
 # register
 
 
-class UserFormView(View):
-    form_class = UserForm
-    template_name = "music/register.html"
-
-    def get(self, request):
-        form = self.form_class(None)
-        return render(request, self.template_name, {"form": form})
-        pass
-
-    def post(self, request):
-        user_form = UserForm(data=request.POST)
-        if user_form.is_valid():
-            user = user_form.save(commit=False)
-            username = user_form.cleaned_data["username"]
-            password = user_form.cleaned_data["password"]
-            user.set_password(password)
-            user.save()
-            # return
-            user = authenticate(username=username, password=password)
-            if user.is_active:
-                login(request, user)
-                albums = Album.objects.filter(user=request.user)
-                print(albums)
-                return render(request, "music/index.html", {"all_albums": albums})
-
-            context = {"form": user_form}
-        return render(request, "music/register.html", context)
-
-
-# login
-def Login_user(request):
-    if request.method == "POST":
-
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(username=username, password=password)
-
-        if user is not None:
-
-            if user.is_active:
-                login(request, user)
-                albums = Album.objects.filter(user=request.user)
-                return render(request, "music/index.html", {"all_albums": albums})
-            else:
-                return render(
-                    request, "music/index.html", {"error": "you account is not active"}
-                )
-        else:
-            return render(request, "music/login.html", {"error": "invaild account"})
-
-    else:
-        return render(request, "music/login.html")
-
-
-# log_out
-def Logout_user(request):
-    logout(request)
-    form = UserForm(request.POST or None)
-
-    context = {"form": form}
-    return render(request, "music/login.html", context)
-
-
-# favorite album
 def favorite_album(request, album_id):
     album = get_object_or_404(Album, pk=album_id)
 
@@ -220,7 +232,7 @@ def favorite_album(request, album_id):
         album.save()
     except (KeyError, Album.DoesNotExist):
         return JsonResponse({"success": False})
-    all_album = Album.objects.filter(user=request.user)
+    all_album = Album.objects.filter(music=request.music)
     return render(request, "music/index.html", {"all_albums": all_album})
 
 

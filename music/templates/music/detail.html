@@ -8,11 +8,8 @@
                     <div class="panel panel-default">
                         <div class="panel panel-body">
                             <a href="{% url 'music:index' %}"></a>
-                            <img src=" {{ album.album_logo.url }}" class="img-responsive">
+                            <img src=" {{ album.album_logo }}" class="img-responsive">
                             <h1>{{ album.album_title }}</h1>
-                            <h3>
-                                <small>{{ album.genre }}</small>
-                            </h3>
                             <h2>{{ album.artist }}</h2>
                         </div>
 
@@ -24,9 +21,9 @@
                     <ul class="nav nav-pills" style="margin-bottom: 10px">
                         <li role="presentation" class="active"><a href="{% url 'music:detail' album.id %}">view All </a>
                         </li>
-                        <li role="presentation" class="active"><a href="{% url 'music:add_song' album.id %}">add
-                            Song </a>
-                        </li>
+{#                        <li role="presentation" class="active"><a href="{% url 'music:add_song' album.id %}">add#}
+{#                            Song </a>#}
+{#                        </li>#}
                     </ul>
 
                     <div class="panel panel-default">
@@ -38,10 +35,12 @@
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th>title</th>
-                                    <th>audio_file</th>
-                                    <th>favorite</th>
-                                    <th>actions</th>
+                                    <th>名字</th>
+                                    <th>作者</th>
+                                    <th>播放数</th>
+                                    <th>关键词</th>
+                                    <th>播放</th>
+                                    <th>收藏</th>
                                 </tr>
 
                                 </thead>
@@ -49,8 +48,13 @@
 
                                 {% for song in album.song_set.all %}
                                     <tr>
-                                        <td>{{ song.song_title }}</td>
-
+                                        <td>{{ song.name}}</td>
+                                        <td>{{ song.author}}</td>
+                                        <td>{{ song.view_num}}</td>
+                                        <td> {% for word in song.word.all %}
+                                            <a href="@"> {{ word.content }}  </a>
+                                        {% endfor %}
+                                       </td>
                                         <td>
                                             <a target="_blank" href=" {{ song.audio_file.url }}">
                                                 <button type="button" class="btn btn-success btn-xs">
@@ -59,29 +63,10 @@
                                                 </button>
                                             </a>
                                         </td>
-
-
-                                        {#                                favorite#}
                                         <td>
                                             <a href=" {% url 'music:favorite_song' song.id %}" class="btn-favorite">
                                                 <span class="glyphicon glyphicon-star {% if song.is_favorite %}active{% endif %}"></span>
                                             </a>
-
-                                        </td>
-
-                                        {#                                delete#}
-                                        <td>
-                                            <form action="{% url 'music:song-delete' song.id %}" method="post"
-                                                  style="display: inline">
-                                                {% csrf_token %}
-                                                {#         将pid 通过name 传递过去#}
-                                                <input type="hidden" name="song_id" value="{{ song.id }}">
-                                                <button type="submit" class="btn btn-danger btn-xs ">
-                                                    <span class="glyphicon glyphicon-remove"></span>
-                                                    &nbsp; delete
-                                                </button>
-
-                                            </form>
                                         </td>
                                     </tr>
                                 {% endfor %}

@@ -5,21 +5,20 @@
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12 col-md-7">
+            <div class="col-sm-12 col-md-6 col-md-offset-3 ">
                 <div class="panel panel-default">
                     <div class="panel-body">
-
-
-                        <form class="form-horizontal" action="{% url 'music:register' %}" method="post"
+                        <h3>注册</h3>
+                        <form class="" action="{% url 'music:register' %}" method="post"
                               enctype="multipart/form-data">
                             {% csrf_token %}
                             {% include 'music/form_template.html' %}
-
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="submit" class="btn btn-success">
-                                        submit
-                                    </button>
+                            <div class="row">
+                                <div class="col-md-5 ">
+                                    <button type="reset" class="btn btn-block btn-danger">清除</button>
+                                </div>
+                                <div class="col-md-5 col-md-offset-2">
+                                    <button type="submit" class="btn btn-block btn-success">注册</button>
                                 </div>
                             </div>
                         </form>

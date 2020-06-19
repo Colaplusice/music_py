@@ -1,119 +1,250 @@
 {% extends 'music/base.html' %}
-{% load staticfiles %}
 {% block body %}
     <div class="container-fluid">
         <div class="row">
             {% if all_albums %}
-                {% for each in all_albums %}
-                    <div class="col-sm-4 col-lg-2">
-                        <div class="thumbnail">
-                            <a href="{% url     'music:detail' each.id %}">
-                                <img src="{{ each.album_logo.url }}" class="img-responsive">
-                            </a>
-                            <div class="caption">
-                                <h2> {{ each.album_title }}</h2>
-                                <h4> {{ each.artist }}</h4>
+                <div class="col-md-offset-1 col-md-9">
+                    <div class="row">
+                        {% for each in all_albums %}
+                            <div class="col-md-3 col-md-offset-1">
+                                <div class="thumbnail">
+                                    <a href="{% url     'music:detail' each.id %}">
+                                        <img src="{{ each.album_logo }}" class="img-responsive">
+                                    </a>
+                                    <div class="caption">
+                                        <h2> {{ each.album_title }}</h2>
+                                        <h4> {{ each.artist }}</h4>
 
-                                <!--  Album details -->
-                                <a href="{% url 'music:detail' each.id %}" class="btn btn-primary btn-sm" role="button">view
-                                    details</a>
-
-                                <!-- Delete Album -->
-
-                                <form action="{% url 'music:album-delete' each.id %}" method="post"
-                                      style="display: inline">
-                                    {% csrf_token %}
-                                    <!---将input 内容提交过去 ---->
-                                    <input type="hidden" name="album_id" value="{{ each.id }}">
-                                    <button type="submit" class="btn btn-default btn-sm">
-                                        <span class="glyphicon glyphicon-trash"></span>
-                                    </button>
-                                </form>
-
-                                <!---favorite album---->
-                                <a href="{% url 'music:favorite_album' each.id %}"
-                                   class="btn btn-default btn-sm btn-favorite" role="button">
-                                    <span class="glyphicon glyphicon-star{% if each.is_favorite %} active{% endif %}"></span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% cycle '' '' '' '' '' '<div class="clearfix visible-lg"></div>' %}
-                {% endfor %}
-            {% elif songs %}
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h3>Songs</h3>
-                    </div>
-                    <div class=" col-sm-12">
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <div class="table">
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th>song Title</th>
-                                            <th>Artist</th>
-                                            <th>Audio file</th>
-                                            <th>Album</th>
-                                            <th>favorite</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for song in songs %}
-                                            <tr>
-                                                <td>{{ song.song_title }}</td>
-                                                <td>{{ song.album.artist }}</td>
-                                                <td>
-                                                    <a target="_blank" href=" {{ song.audio_file.url }}">
-                                                        <button type="button" class="btn btn-success btn-xs">
-                                                            <span class="glyphicon glyphicon-play"></span>
-                                                            &nbsp; play
-                                                        </button>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'music:detail' song.album_id %}">
-                                                        <img src="{{ song.album.album_logo.url }}"
-                                                             class="img-responsive"
-                                                             style="width: 20px; float: left; margin-right: 10px">
-                                                    </a>
-                                                    <a href="{% url 'music:detail' song.album.id %}">
-                                                        {{ song.album.album_title }}
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'music:favorite_song' song.id %}"
-                                                       class="btn-favorite">
-
-        <span class="glyphicon glyphicon-star {% if song.is_favorite %} active{% endif %}">
-        </span>
-
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                        <!--  Album details -->
+                                        <a href="{% url 'music:detail' each.id %}" class="btn btn-primary btn-sm" role="button">view
+                                            details</a>
+                                        <!---favorite album---->
+                                        <a href="{% url 'music:favorite_album' each.id %}"
+                                           class="btn btn-default btn-sm btn-favorite" role="button">
+                                            <span class="glyphicon glyphicon-star{% if each.is_favorite %} active{% endif %}"></span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            <div class="col-md-3 col-md-offset-1">
+                                <div class="thumbnail">
+                                    <a href="{% url     'music:detail' each.id %}">
+                                        <img src="{{ each.album_logo }}" class="img-responsive">
+                                    </a>
+                                    <div class="caption">
+                                        <h2> {{ each.album_title }}</h2>
+                                        <h4> {{ each.artist }}</h4>
+
+                                        <!--  Album details -->
+                                        <a href="{% url 'music:detail' each.id %}" class="btn btn-primary btn-sm" role="button">view
+                                            details</a>
+                                        <!---favorite album---->
+                                        <a href="{% url 'music:favorite_album' each.id %}"
+                                           class="btn btn-default btn-sm btn-favorite" role="button">
+                                            <span class="glyphicon glyphicon-star{% if each.is_favorite %} active{% endif %}"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-md-offset-1">
+                                <div class="thumbnail">
+                                    <a href="{% url     'music:detail' each.id %}">
+                                        <img src="{{ each.album_logo }}" class="img-responsive">
+                                    </a>
+                                    <div class="caption">
+                                        <h2> {{ each.album_title }}</h2>
+                                        <h4> {{ each.artist }}</h4>
+
+                                        <!--  Album details -->
+                                        <a href="{% url 'music:detail' each.id %}" class="btn btn-primary btn-sm" role="button">view
+                                            details</a>
+                                        <!---favorite album---->
+                                        <a href="{% url 'music:favorite_album' each.id %}"
+                                           class="btn btn-default btn-sm btn-favorite" role="button">
+                                            <span class="glyphicon glyphicon-star{% if each.is_favorite %} active{% endif %}"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% cycle '' '' '' '' '' '<div class="clearfix visible-lg"></div>' %}
+                        {% endfor %}
                     </div>
+
+                    {% if songs %}
+                        <div class="row">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div id="music">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>登录后将系统将推进给你合适音频</h4>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <a class="btn btn-primary btn-block" href="/login">登录</a>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <a class="btn btn-primary btn-block" href="/register">注册</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-offset-2  col-md-2">
+                                            <button class="btn btn-block btn-warning">没听懂</button>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-success btn-block">听懂了</button>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 100px; margin-bottom: 200px">
+                                        <button style="margin-bottom: 20px;" class="btn btn-default" onclick="toggle_content()">显示文本</button>
+                                        <div class="jumbotron" style=" height: 200px;opacity: 0; overflow:  scroll; background-color: #777777; color: white" id="song_content">
+                                            <p>
+                                            </p>
+                                        </div>
+
+                                        {#                                        {{ sdasdsadddddddddd}}#}
+                                    </div>
+
+                                    {#                    <div class="col-sm-12">#}
+                                    {#                        <h3>Songs</h3>#}
+                                    {#                    </div>#}
+                                    {#                    <div class=" col-md-9">#}
+                                    {#                        <div class="panel panel-default">#}
+                                    {#                            <div class="panel-body">#}
+                                    {#                                <div class="table">#}
+                                    {#                                    <table class="table">#}
+                                    {#                                        <thead>#}
+                                    {#                                        <tr>#}
+                                    {#                                            <th>song Title</th>#}
+                                    {#                                            <th>Artist</th>#}
+                                    {#                                            <th>Audio file</th>#}
+                                    {#                                            <th>Album</th>#}
+                                    {#                                            <th>favorite</th>#}
+                                    {#                                        </tr>#}
+                                    {#                                        </thead>#}
+                                    {#                                        <tbody>#}
+                                    {#                                        {% for song in songs %}#}
+                                    {#                                            <tr>#}
+                                    {#                                                <td>{{ song.name }}</td>#}
+                                    {#                                                <td>{{ song.album.artist }}</td>#}
+                                    {#                                                <td>#}
+                                    {#                                                    <a target="_blank" href=" {{ song.audio_file.url }}">#}
+                                    {#                                                        <button type="button" class="btn btn-success btn-xs">#}
+                                    {#                                                            <span class="glyphicon glyphicon-play"></span>#}
+                                    {#                                                            &nbsp; play#}
+                                    {#                                                        </button>#}
+                                    {#                                                    </a>#}
+                                    {#                                                </td>#}
+                                    {#                                                <td>#}
+                                    {#                                                    <a href="{% url 'music:detail' song.album_id %}">#}
+                                    {#                                                        <img src="{{ song.album.album_logo.url }}"#}
+                                    {#                                                             class="img-responsive"#}
+                                    {#                                                             style="width: 20px; float: left; margin-right: 10px">#}
+                                    {#                                                    </a>#}
+                                    {#                                                    <a href="{% url 'music:detail' song.album.id %}">#}
+                                    {#                                                        {{ song.album.album_title }}#}
+                                    {#                                                    </a>#}
+                                    {#                                                </td>#}
+                                    {#                                                <td>#}
+                                    {#                                                    <a href="{% url 'music:favorite_song' song.id %}"#}
+                                    {#                                                       class="btn-favorite">#}
+                                    {##}
+                                    {#        <span class="glyphicon glyphicon-star {% if song.is_favorite %} active{% endif %}">#}
+                                    {#        </span>#}
+                                    {##}
+                                    {#                                                    </a>#}
+                                    {#                                                </td>#}
+                                    {#                                            </tr>#}
+                                    {#                                        {% endfor %}#}
+                                    {#                                        </tbody>#}
+                                    {#                                    </table>#}
+                                    {#                                </div>#}
+                                    {#                            </div>#}
+                                    {#                        </div>#}
+                                    {#                    </div>#}
+                                </div>
+
+                            </div>
+                        </div>
+                        {#            {% else %}#}
+                        {#                <div class="col-sm-12">#}
+                        {#                    <br>#}
+                        {#                    <button type="button" class="btn btn-success">#}
+                        {#                        <span class="glyphicon glyphicon-plus"></span>#}
+                        {#                        <a href="{% url 'music:index' %}" class="btn-success"> add a album</a>#}
+                        {#                    </button>#}
+                        {#                </div>#}
+                        {#                <br>#}
+                        {#                <br>#}
+                        {#                <br>#}
+                        {#                <h3>you don't have albums</h3>#}
+                    {% endif %}
                 </div>
-            {% else %}
-                <div class="col-sm-12">
-                    <br>
-                    <button type="button" class="btn btn-success">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        <a href="{% url 'music:album-add' %}" class="btn-success"> add a album</a>
-                    </button>
-                </div>
-                <br>
-                <br>
-                <br>
-                <h3>you don't have albums</h3>
             {% endif %}
+
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/cplayer/dist/cplayer.min.js"></script>
+    <script>
+        const options = {
+            zoomOutKana: true,
+            big: true,
+            size: 200,
+            shadowDom: false
+        };
+        let player = new cplayer({
+                element: document.getElementById('music'),
+                playlist: [
+                    {% for song in songs %}
+                        {
+                            src: "{{ song.audio_file }}",
+                            poster: '',
+                            name: '{{ song.name }}',
+                            artist: '{{ song.author }}',
+                            lyric: '{{ song.contents }}',
+                            content: "{{ song.content }}",
+                            sublyric: '{{ song.translation }}'
+                        },
+                    {% endfor %}
+                ],
+                dropDownMenuMode: 'bottom',
+                volume: 0.75,
+                width: '100%',
+                showPlaylistButton: true,
+                size: '20px'
+            }
+        )
+    </script>
+    {#     显示文本内容#}
+
+    <script>
+        var show = 1;
+
+        function toggle_content() {
+            var x = document.getElementById('song_content');
+            var a = player.nowplay;
+            x.innerHTML = "<p>" + a.content + "</p>";
+            $('#song_content').animate({opacity: show});
+            show = !show;
+
+        }
+
+    </script>
+    <script type="text/javascript" src="https://sorgalla.com/jcarousel/dist/jquery.jcarousel.min.js"></script>
+    <script>
+        console.log('sd');
+        $(function () {
+            $('.jcarousel').jcarousel({
+                // Configuration goes here
+                {#list: '.jcarousel-list'#}
+
+            });
+        });
+    </script>
 {% endblock %}
