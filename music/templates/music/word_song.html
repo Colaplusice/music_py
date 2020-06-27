@@ -1,6 +1,5 @@
 {% extends 'music/base.html' %}
 {% block body %}
-    {% if album %}
         <div class="container-fluid song-container">
             <div class="row">
                 {#left album info#}
@@ -8,11 +7,8 @@
                     <div class="panel panel-default">
                         <div class="panel panel-body">
                             <a href="{% url 'music:index' %}"></a>
-                            <img src=" {{ album.album_logo }}" class="img-responsive">
-                            <h1>{{ album.album_title }}</h1>
-                            <h2>{{ album.artist }}</h2>
+                            <img src="https://via.placeholder.com/1000/000000/FFFFFF?text={{ word }}" class="img-responsive">
                         </div>
-
                     </div>
                 </div>
 
@@ -28,7 +24,7 @@
 
                     <div class="panel panel-default">
                         <div class="panel-body">
-                            <h3>所有音频</h3>
+                            <h3>单词 {{ word }}</h3>
                             {% if error_message %}
                                 <p><strong>  {{ error_message }}  </strong></p>
                             {% endif %}
@@ -42,11 +38,9 @@
                                     <th>播放</th>
                                     <th>收藏</th>
                                 </tr>
-
                                 </thead>
                                 <tbody>
-
-                                {% for song in album.song_set.all %}
+                                {% for song in songs %}
                                     <tr>
                                         <td>{{ song.name }}</td>
                                         <td>{{ song.author }}</td>
@@ -79,11 +73,6 @@
                 </div>
             </div>
         </div>
-    {% else %}
-        <h2 align="center"> album does not exist!</h2>
-        <h4 align="center"><a href="{% url 'music:index' %}">back to index view</a></h4>
-
-    {% endif %}
 {% endblock %}
 
 {% block script %}
@@ -97,7 +86,7 @@
         let player = new cplayer({
                 element: document.getElementById('music'),
                 playlist: [
-                    {% for song in album.song_set.all %}
+                    {% for song in songs %}
                         {
                             src: "{{ song.audio_file }}",
                             poster: '',

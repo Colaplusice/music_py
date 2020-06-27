@@ -57,7 +57,7 @@
             </form>
             <ul class="nav navbar-nav navbar-right">
                 {% if request.session.login_in == True %}
-                    <li><a href="#">{{ request.session.name }}</a></li>
+                    <li><a href="{% url 'music:personal' %}">{{ request.session.name }}</a></li>
                     <li class="nav navbar-nav navbar-right">
                         <a href="{% url 'music:logout' %}">
                             <span class="glyphicon glyphicon-off"></span>&nbsp; 登出
@@ -84,6 +84,7 @@
 {% endblock %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cplayer/dist/cplayer.min.js"></script>
 
 {#<script src="{% static 'music/js/bootstrap.min.js' %}"></script>#}
 {% block script %}

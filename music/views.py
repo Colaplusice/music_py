@@ -1,7 +1,7 @@
 # encoding=utf-8
 from functools import wraps
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -113,8 +113,8 @@ def index(request):
 
 
 def detail(request, album_id):
-    album=Album.objects.get(id=album_id)
-    return render(request, 'music/detail.html',{'album':album})
+    album = Album.objects.get(id=album_id)
+    return render(request, 'music/detail.html', {'album': album})
 
 
 def random_choice_songs():
@@ -250,3 +250,47 @@ def favorite_song(request, song_id):
     except (KeyError, Song.DoesNotExist):
         return JsonResponse({"error": "song is not exist"})
     return render(request, "music/detail.html", {"album": album})
+
+
+@login_in
+def personal(request):
+    user_id = request.session.get('user_id')
+    user = User.objects.get(id=user_id)
+    return render(request, 'music/personal.html', {"user": user})
+
+
+def word_song(request, word):
+    songs = Song.objects.filter(word__content=word)
+    return render(request, 'music/word_song.html', {'songs': songs, 'word': word})
+
+
+@login_in
+def learned(request, song_name):
+    song = Song.objects.get(name=song_name)
+    user_id = request.session.get('user_id')
+    user = User.objects.get(id=user_id)
+    user_song, _ = UserSong.objects.get_or_create(song=song, user=user, defaults={'finished': True})
+    user_song.finished = True
+    user_song.save()
+    return HttpResponse(status=200)
+
+
+@login_in
+def unlearned(request, song_name):
+    song = Song.objects.get(name=song_name)
+    user_id = request.session.get('user_id')
+    user = User.objects.get(id=user_id)
+    user_song, _ = UserSong.objects.get_or_create(song=song, user=user, defaults={'finished': False})
+    return HttpResponse(status=200)
+
+
+def my_collect(request):
+    pass
+
+
+def my_comments(request):
+    pass
+
+
+def my_rate(request):
+    pass

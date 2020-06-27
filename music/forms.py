@@ -2,7 +2,7 @@ from django import forms
 from phonenumber_field.formfields import PhoneNumberField
 
 from .models import Song, Album
-from .models import User
+from .models import User, RegisterCode
 
 
 class AlbumForm(forms.ModelForm):
@@ -21,7 +21,7 @@ class LoginForm(forms.Form):
     username = forms.CharField(
         label="昵称",
         max_length=50,
-        widget=forms.TextInput(attrs={"class": "form-control required",'placeholder':'密码'}),
+        widget=forms.TextInput(attrs={"class": "form-control required", 'placeholder': '密码'}),
     )
     # phone = PhoneNumberField(widget=forms.TextInput(attrs={"class": "form-control required", 'placeholder': '手机号'}), label='手机号', required=True)
     #
@@ -47,13 +47,25 @@ class RegisterForm(forms.Form):
         label="确认密码",
         widget=forms.PasswordInput(attrs={"class": "form-control", 'placeholder': '确认密码'}),
     )
+    register_code = forms.CharField(
+        label="注册码",
+        widget=forms.TextInput(attrs={"class": "form-control", 'placeholder': '注册码'}),
+    )
+
+    def clean_register_code(self):
+        register_code = self.cleaned_data.get('register_code')
+        register_code = RegisterCode.objects.filter(code=register_code).first()
+        if register_code is None:
+            raise forms.ValidationError(
+                "你的注册码是无效的，请联系网站管理员"
+            )
 
     def clean_username(self):
         username = self.cleaned_data.get("username")
 
         if len(username) < 6:
             raise forms.ValidationError(
-                "Your username must be at least 6 characters long."
+                "用户名最少为6个字符"
             )
         elif len(username) > 50:
             raise forms.ValidationError("Your username is too long.")
