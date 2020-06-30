@@ -57,6 +57,8 @@ class User(TimeStampedModel):
     def __str__(self):
         return self.username
 
+    class Meta:
+        verbose_name_plural = "用户"
 
 class Album(TimeStampedModel):
     # user = models.ForeignKey(User, default=1, on_delete=True)
@@ -69,12 +71,16 @@ class Album(TimeStampedModel):
     def __str__(self):
         return self.album_title + " - " + self.genre
 
+    class Meta:
+        verbose_name_plural = "专辑"
 
 class Word(TimeStampedModel):
     content = models.CharField(max_length=32, verbose_name='单词内容')
 
     def __str__(self):
         return self.content
+    class Meta:
+        verbose_name_plural = "单词"
 
 
 class Song(TimeStampedModel):
@@ -91,6 +97,9 @@ class Song(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name_plural = "音频"
 
     # def on
     def delete(self, using=None, keep_parents=False):
@@ -111,6 +120,9 @@ class UserSong(TimeStampedModel):
     song = models.ForeignKey(Song, verbose_name='歌曲', on_delete=models.CASCADE)
     finished = models.SmallIntegerField(verbose_name='当前状态')
 
+    class Meta:
+        verbose_name_plural = "用户音频"
+
 
 def gen_newcode():
     length = 5
@@ -127,6 +139,9 @@ class RegisterCode(TimeStampedModel):
     # 注册码
     code = models.CharField(primary_key=True, default=gen_newcode, max_length=10)
 
+    class Meta:
+        verbose_name_plural = "注册码"
+
 
 class UserWord(TimeStampedModel):
     word = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='单词')
@@ -136,6 +151,9 @@ class UserWord(TimeStampedModel):
     def __str__(self):
         return self.user.username + ':' + self.word.content + '是否掌握:' + str(self.learned)
 
+    class Meta:
+        verbose_name_plural = "用户单词"
+
 
 class MessageBoard(TimeStampedModel):
     title = models.CharField(max_length=32, verbose_name='公告标题')
@@ -143,3 +161,6 @@ class MessageBoard(TimeStampedModel):
 
     def __str__(self):
         return self.content
+
+    class Meta:
+        verbose_name_plural = "公告板"

@@ -4,4 +4,4 @@ django-simpleui==2.1
 gunicorn==19.9
 phonenumbers==8.12.5
 django-phonenumber-field==4.0.0
-django-simpleui==2.1
+django-simpleui

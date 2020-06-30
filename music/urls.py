@@ -12,7 +12,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     # /music/album_
     path('detail/<int:album_id>/', views.detail, name="detail"),
-    path('/personal/', views.personal, name='personal'),
+    path('personal/', views.personal, name='personal'),
     path("my_comments/", views.my_comments, name="my_comments"),
     path("my_collect/", views.my_collect, name="my_collect"),
     path("my_rate/", views.my_rate, name="my_rate"),
