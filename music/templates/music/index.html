@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <div class="row">
             {% if all_albums %}
-                <div class="col-md-offset-1 col-md-9">
+                <div class="col-md-9">
                     <div class="row">
                         {% for each in all_albums %}
                             <div class="col-md-3 col-md-offset-1">
@@ -18,28 +18,22 @@
                                         <!--  Album details -->
                                         <a href="{% url 'music:detail' each.id %}" class="btn btn-primary btn-sm" role="button">
                                             所有歌曲</a>
-                                        <!---favorite album---->
-                                        {#                                        <a href="{% url 'music:favorite_album' each.id %}"#}
-                                        {#                                           class="btn btn-default btn-sm btn-favorite" role="button">#}
-                                        {#                                            <span class="glyphicon glyphicon-star{% if each.is_favorite %} active{% endif %}"></span>#}
-                                        {#                                        </a>#}
                                     </div>
                                 </div>
                             </div>
-                            {#                            {% cycle '' '' '' '' '' '<div class="clearfix visible-lg"></div>' %}#}
                         {% endfor %}
                     </div>
 
                     {% if songs %}
                         <div class="row">
                             <div class="container-fluid">
-                                <div class="row">
+                                <div class="row col-md-offset-1">
                                     <div id="music">
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="row">
-                                                {% if request.session.login_in == False %}
+                                                {% if request.session.login_in != True %}
                                                     <div class="col-md-6">
                                                         <h4>登录后将系统将推进给你合适音频</h4>
                                                     </div>
@@ -65,88 +59,23 @@
                                             <p>
                                             </p>
                                         </div>
-
-                                        {#                                        {{ sdasdsadddddddddd}}#}
                                     </div>
-
-                                    {#                    <div class="col-sm-12">#}
-                                    {#                        <h3>Songs</h3>#}
-                                    {#                    </div>#}
-                                    {#                    <div class=" col-md-9">#}
-                                    {#                        <div class="panel panel-default">#}
-                                    {#                            <div class="panel-body">#}
-                                    {#                                <div class="table">#}
-                                    {#                                    <table class="table">#}
-                                    {#                                        <thead>#}
-                                    {#                                        <tr>#}
-                                    {#                                            <th>song Title</th>#}
-                                    {#                                            <th>Artist</th>#}
-                                    {#                                            <th>Audio file</th>#}
-                                    {#                                            <th>Album</th>#}
-                                    {#                                            <th>favorite</th>#}
-                                    {#                                        </tr>#}
-                                    {#                                        </thead>#}
-                                    {#                                        <tbody>#}
-                                    {#                                        {% for song in songs %}#}
-                                    {#                                            <tr>#}
-                                    {#                                                <td>{{ song.name }}</td>#}
-                                    {#                                                <td>{{ song.album.artist }}</td>#}
-                                    {#                                                <td>#}
-                                    {#                                                    <a target="_blank" href=" {{ song.audio_file.url }}">#}
-                                    {#                                                        <button type="button" class="btn btn-success btn-xs">#}
-                                    {#                                                            <span class="glyphicon glyphicon-play"></span>#}
-                                    {#                                                            &nbsp; play#}
-                                    {#                                                        </button>#}
-                                    {#                                                    </a>#}
-                                    {#                                                </td>#}
-                                    {#                                                <td>#}
-                                    {#                                                    <a href="{% url 'music:detail' song.album_id %}">#}
-                                    {#                                                        <img src="{{ song.album.album_logo.url }}"#}
-                                    {#                                                             class="img-responsive"#}
-                                    {#                                                             style="width: 20px; float: left; margin-right: 10px">#}
-                                    {#                                                    </a>#}
-                                    {#                                                    <a href="{% url 'music:detail' song.album.id %}">#}
-                                    {#                                                        {{ song.album.album_title }}#}
-                                    {#                                                    </a>#}
-                                    {#                                                </td>#}
-                                    {#                                                <td>#}
-                                    {#                                                    <a href="{% url 'music:favorite_song' song.id %}"#}
-                                    {#                                                       class="btn-favorite">#}
-                                    {##}
-                                    {#        <span class="glyphicon glyphicon-star {% if song.is_favorite %} active{% endif %}">#}
-                                    {#        </span>#}
-                                    {##}
-                                    {#                                                    </a>#}
-                                    {#                                                </td>#}
-                                    {#                                            </tr>#}
-                                    {#                                        {% endfor %}#}
-                                    {#                                        </tbody>#}
-                                    {#                                    </table>#}
-                                    {#                                </div>#}
-                                    {#                            </div>#}
-                                    {#                        </div>#}
-                                    {#                    </div>#}
                                 </div>
 
                             </div>
                         </div>
-                        {#            {% else %}#}
-                        {#                <div class="col-sm-12">#}
-                        {#                    <br>#}
-                        {#                    <button type="button" class="btn btn-success">#}
-                        {#                        <span class="glyphicon glyphicon-plus"></span>#}
-                        {#                        <a href="{% url 'music:index' %}" class="btn-success"> add a album</a>#}
-                        {#                    </button>#}
-                        {#                </div>#}
-                        {#                <br>#}
-                        {#                <br>#}
-                        {#                <br>#}
-                        {#                <h3>you don't have albums</h3>#}
                     {% endif %}
                 </div>
             {% endif %}
+            <div class="col-md-3">
+                <div class="jumbotron " style="background-color: #265a88; color: white">
+                    <h2>{{ message_board.title }}</h2>
+                    <p>{{ message_board.content }}</p>
+                </div>
+            </div>
 
         </div>
+
     </div>
 
 {% endblock %}
@@ -211,12 +140,17 @@
 
         function toggle_content() {
             var x = document.getElementById('song_content');
-            var name = player.nowplay.name;
-            x.innerHTML = "<p>" + a.content + "</p>";
+            var play = player.nowplay;
+            x.innerHTML = "<p>" + play.content + "</p>";
             $('#song_content').animate({opacity: show});
             show = !show;
-
         }
+
+        player.on('started', function () {
+            var x = document.getElementById('song_content');
+            var play = player.nowplay;
+            x.innerHTML = "<p>" + play.content + "</p>";
+        })
     </script>
 
 {% endblock %}

@@ -18,8 +18,11 @@ urlpatterns = [
     path("my_rate/", views.my_rate, name="my_rate"),
     # word song
     path("word_song/<str:word>/", views.word_song, name="word_song"),
-    path("learned/<str:song_name>/", views.learned, name="word_song"),
-    path("unlearned/<str:song_name>/", views.unlearned, name="word_song"),
+    path("learned/<str:song_name>/", views.learned, name="learned"),
+    path("unlearned/<str:song_name>/", views.unlearned, name="unlearned"),
+    path("have_learned", views.have_learned, name="have_learned"),
+    path("have_unlearned", views.have_unlearned, name="have_unlearned"),
+    path("have_listened", views.have_listened, name="have_listened"),
 
     # /music/add
     # url(r"^create_album/$", views.Creatalbum, name="index"),

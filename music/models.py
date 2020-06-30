@@ -1,19 +1,64 @@
 import random
 
-from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import signals
-from django.dispatch import receiver
+from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 
-class User(models.Model):
+class AutoCreatedField(models.DateTimeField):
+    """
+    A DateTimeField that automatically populates itself at
+    object creation.
+
+    By default, sets editable=False, default=datetime.now.
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('editable', False)
+        kwargs.setdefault('default', now)
+        super(AutoCreatedField, self).__init__(*args, **kwargs)
+
+
+class AutoLastModifiedField(AutoCreatedField):
+    """
+    A DateTimeField that updates itself on each save() of the model.
+
+    By default, sets editable=False and default=datetime.now.
+
+    """
+
+    def pre_save(self, model_instance, add):
+        value = now()
+        setattr(model_instance, self.attname, value)
+        return value
+
+
+class TimeStampedModel(models.Model):
+    """
+    An abstract base class model that provides self-updating
+    ``created`` and ``modified`` fields.
+
+    """
+    created = AutoCreatedField(_('created'))
+    modified = AutoLastModifiedField(_('modified'))
+
+    # 不能以此类直接建立表
+    class Meta:
+        abstract = True
+
+
+class User(TimeStampedModel):
     username = models.CharField(max_length=255, unique=True, verbose_name="账号")
     password = models.CharField(max_length=255, verbose_name="密码")
     phone = PhoneNumberField(null=False, blank=False, unique=True)
 
+    def __str__(self):
+        return self.username
 
-class Album(models.Model):
+
+class Album(TimeStampedModel):
     # user = models.ForeignKey(User, default=1, on_delete=True)
     # is_favorite = models.BooleanField(default=False)
     # artist = models.CharField(max_length=250)
@@ -25,14 +70,14 @@ class Album(models.Model):
         return self.album_title + " - " + self.genre
 
 
-class Word(models.Model):
+class Word(TimeStampedModel):
     content = models.CharField(max_length=32, verbose_name='单词内容')
 
     def __str__(self):
         return self.content
 
 
-class Song(models.Model):
+class Song(TimeStampedModel):
     album = models.ForeignKey(Album, on_delete=models.CASCADE, verbose_name='音频专辑')
     name = models.CharField(max_length=250, verbose_name='名字')
     author = models.CharField(verbose_name='作者', max_length=128)
@@ -53,15 +98,15 @@ class Song(models.Model):
         file.delete()
         super(Song, self).delete()
 
+    def save(self, *args, **kwargs):
+        # 第一次添加单词时会更新释义
+        if self._state.adding is True:
+            word_content = self.content
 
-@receiver(signals.post_init, sender=Song)
-def create_word(sender, instance, **kwargs):
-    
-    print('this is sender', sender, type(sender))
-    print('this is intstance', instance, type(instance))
+        super(Song, self).save(*args, **kwargs)
 
 
-class UserSong(models.Model):
+class UserSong(TimeStampedModel):
     user = models.ForeignKey(User, verbose_name='用户', on_delete=models.CASCADE)
     song = models.ForeignKey(Song, verbose_name='歌曲', on_delete=models.CASCADE)
     finished = models.SmallIntegerField(verbose_name='当前状态')
@@ -78,6 +123,23 @@ def gen_newcode():
     return code
 
 
-class RegisterCode(models.Model):
+class RegisterCode(TimeStampedModel):
     # 注册码
     code = models.CharField(primary_key=True, default=gen_newcode, max_length=10)
+
+
+class UserWord(TimeStampedModel):
+    word = models.ForeignKey(Word, on_delete=models.CASCADE, verbose_name='单词')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
+    learned = models.BooleanField(verbose_name='是否掌握')
+
+    def __str__(self):
+        return self.user.username + ':' + self.word.content + '是否掌握:' + str(self.learned)
+
+
+class MessageBoard(TimeStampedModel):
+    title = models.CharField(max_length=32, verbose_name='公告标题')
+    content = models.TextField(verbose_name='公告内容')
+
+    def __str__(self):
+        return self.content

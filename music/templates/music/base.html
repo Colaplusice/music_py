@@ -57,6 +57,9 @@
             </form>
             <ul class="nav navbar-nav navbar-right">
                 {% if request.session.login_in == True %}
+                    <li><a href='#' id="have_listened"></a></li>
+                    <li><a href="{% url 'music:have_learned' %}">已掌握的单词</a></li>
+                    <li><a href="{% url 'music:have_unlearned' %}">未掌握的单词</a></li>
                     <li><a href="{% url 'music:personal' %}">{{ request.session.name }}</a></li>
                     <li class="nav navbar-nav navbar-right">
                         <a href="{% url 'music:logout' %}">
@@ -80,13 +83,33 @@
         </div>
     </div>
 </nav>
+{% if message %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div id="myAlert" class="alert alert-success">
+                <a href="#" class="close" data-dismiss="alert">&times;</a><strong>{{ message }}</strong></div>
+        </div>
+    </div>
+{% endif %}
 {% block  body %}
+
 {% endblock %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cplayer/dist/cplayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cplayer/dist/cplayer.min.js"></script>
 
 {#<script src="{% static 'music/js/bootstrap.min.js' %}"></script>#}
+
+
+<script>
+    $.get('/have_listened', function (data, status) {
+        var listened=document.getElementById('have_listened');
+        listened.text='已播放: '+data.listened_count;
+    }).fail(function () {
+        alert('请登录');
+    })
+</script>
+
 {% block script %}
 {% endblock %}
 </body>

@@ -1,0 +1,24 @@
+{% extends 'music/base.html' %}
+{% block body %}
+    <div class="container">
+        <h2 align="center" style="margin-bottom: 40px">{{ title }}</h2>
+
+        <div class="row">
+        {% if learned_words %}
+                {% for learned_word in learned_words %}
+                    <div class="col-md-2">
+                        <a href="{% url 'music:word_song' learned_word.content %}" class="btn btn-block btn-primary">{{ learned_word.content }}</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+
+            <h2 style="color: green" align="center">恭喜你，暂无未掌握单词!</h2>
+
+        {% endif %}
+
+        </div>
+    </div>
+
+
+
+{% endblock %}

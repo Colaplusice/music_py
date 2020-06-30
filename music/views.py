@@ -1,7 +1,8 @@
 # encoding=utf-8
 from functools import wraps
 
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -51,9 +52,11 @@ def login(request):
                     request, "music/login.html", {"form": form, "message": "账户或密码错误"}
                 )
         else:
+
             print('form invalid')
     else:
         form = LoginForm()
+        print('here')
         return render(request, "music/login.html", {"form": form})
 
 
@@ -85,13 +88,27 @@ def logout(request):
     return redirect(reverse("index"))
 
 
+def recommend_songs(user_id=None, n=5):
+    if user_id is None:
+        songs = Song.objects.order_by('?')[:n]
+    else:
+        # 未掌握的单词
+        unlearned_word = UserWord.objects.filter(user_id=user_id, learned=False)
+        songs = Song.objects.filter(word__in=unlearned_word).order_by('?')
+        learned_songs = UserSong.objects.filter(user_id=user_id)
+        learned_songs = [learned_song.song for learned_song in learned_songs]
+        if len(songs) < n:
+            songs.extend(Song.objects.all() - learned_songs[:n - len(learned_songs)])
+    return set(songs)
+
+
 def index(request):
     # try:
     # if not request.music.is_authenticated:
     #     return render(request, "music/login.html")
     # else:
     albums = Album.objects.all()
-    songs = random_choice_songs()
+    songs = recommend_songs()
     # query = request.GET.get("q")
 
     # if query:
@@ -99,11 +116,12 @@ def index(request):
     #         Q(album_title__icontains=query) | Q(artist__icontains=query)
     #     ).distinct()
     #
+    message_board = MessageBoard.objects.order_by('-modified').first()
     #     song_results = song_results.filter(Q(song_title__contains=query)).distinct()
     return render(
         request,
         "music/index.html",
-        {"all_albums": albums, 'songs': songs},
+        {"all_albums": albums, 'songs': songs, 'message_board': message_board},
     )
     # return render(request, "music/index.html", {"all_albums": albums})
 
@@ -259,6 +277,36 @@ def personal(request):
     return render(request, 'music/personal.html', {"user": user})
 
 
+@login_in
+def have_learned(request):
+    user_id = request.session.get('user_id')
+    user_learned_song = UserSong.objects.filter(user_id=user_id, finished=True)
+    learned_words = set()
+    for user_song in user_learned_song:
+        song_words = user_song.song.word.all()
+        for word in song_words:
+            word, _ = UserWord.objects.get_or_create(word=word, user_id=user_id, defaults={'learned': True})
+            if not word.learned:
+                word.learned = True
+                word.save()
+            learned_words.add(word.word)
+    return render(request, 'music/word_list.html', {"learned_words": learned_words, 'title': '已掌握单词'})
+
+
+@login_in
+def have_unlearned(request):
+    user_id = request.session.get('user_id')
+    user_learned_song = UserSong.objects.filter(user_id=user_id, finished=False)
+    unlearned_words = set()
+    for user_song in user_learned_song:
+        song_words = user_song.song.word.all()
+        for word in song_words:
+            word, _ = UserWord.objects.get_or_create(word=word, user_id=user_id, defaults={'learned': False})
+            if not word.learned:
+                unlearned_words.add(word)
+    return render(request, 'music/word_list.html', {"learned_words": unlearned_words, 'title': '未掌握单词'})
+
+
 def word_song(request, word):
     songs = Song.objects.filter(word__content=word)
     return render(request, 'music/word_song.html', {'songs': songs, 'word': word})
@@ -282,6 +330,13 @@ def unlearned(request, song_name):
     user = User.objects.get(id=user_id)
     user_song, _ = UserSong.objects.get_or_create(song=song, user=user, defaults={'finished': False})
     return HttpResponse(status=200)
+
+
+@login_in
+def have_listened(request):
+    user_id = request.session.get('user_id')
+    listened_count = UserSong.objects.filter(user_id=user_id).count()
+    return JsonResponse(data={'listened_count': listened_count})
 
 
 def my_collect(request):
