@@ -1,4 +1,4 @@
-django==2.2.10
+django==2.2.18
 pymysql==0.9.3
 django-simpleui==2.1
 gunicorn==19.9
